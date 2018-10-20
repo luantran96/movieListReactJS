@@ -1,0 +1,13 @@
+
+
+#input, h1 {
+	display: flex;
+	justify-content: space-around;
+}
+
+
+#table {
+	margin: 20px auto;
+	width: 60%;
+}
+

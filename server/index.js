@@ -9,7 +9,9 @@ const port = 3000;
 
 app.use(bodyParser.json());
 
-app.use(express.static(__dirname + '/public/dist'));
+console.log(__dirname + '/../public/dist');
+
+app.use(express.static(__dirname + './../public/dist'));
 
 
 app.listen(port, (req,res) => console.log(`Listening on port ${port}`))
