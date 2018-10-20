@@ -6,7 +6,12 @@
 }
 
 
+#watched {
+
+}
+
 #table {
+	padding: 0;
 	margin: 20px auto;
 	width: 60%;
 }

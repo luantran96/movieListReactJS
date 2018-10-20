@@ -16,27 +16,25 @@ class App extends React.Component {
 		this.createList = this.createList.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
+		this.addMovies = this.addMovies.bind(this);
+		this.renderWatched = this.renderWatched.bind(this);
+		this.renderToWatch = this.renderToWatch.bind(this);
 
 	}
 
 
 	handleChange({value}, actionType) {
-
 		this.setState({
 			val: value
 		});
-
-		console.log(this.state.val);
 	}
 
 	handleSearch() {
-
 		if(this.state.val === ' ') {
 			this.setState({
 				movies: this.state.movies
 			});		
 		}
-
 		let updatedMovies = [];
 
 		this.state.movies.forEach( (movie) => {
@@ -51,16 +49,35 @@ class App extends React.Component {
 
 	}
 
+	addMovies() {
+		let movie = this.state.val;
+		let movies = this.state.movies;
+
+		movies.push({title: movie});
+
+		this.setState({
+			movies: movies
+		})
+	}
 
 	createList() {
-
 	var list = [];
-
 		this.state.curMovies.forEach((movie) => {
-			list.push(<MovieListEntry movie={movie} /> );
+			list.push(<MovieListEntry movie={movie}/>);
 		});
 		return list;
 	}
+
+	renderWatched() {
+
+
+	}
+
+	renderToWatch() {
+
+
+	}
+
 
 	render() {
 		return (
@@ -69,21 +86,20 @@ class App extends React.Component {
 		<h1> Movie List </h1>
 
 <div id ='input'>	
-
 	<div id='addMovies'>
 	<Input id='searchBtn' placeholder='Add Movie...' onChange= { (e) => this.handleChange(e.target) }/>
-	<Button id='addBtn' >Add</Button>
+	<Button id='addBtn' color='teal' onClick ={() => this.addMovies()}>Add</Button>
 	</div>
 
 	<div id='search'>
 	<Input id='searchBtn' placeholder='Search...' onChange= { (e) => this.handleChange(e.target) }/>
-	<Button id='searchBtn' onClick ={() => this.handleSearch()}>Search</Button>
-
+	<Button id='searchBtn' color='teal' onClick ={() => this.handleSearch()}>Search</Button>
 	</div>
-
 </div>
 
 	<div id='table'>
+	<Button color='green' id='watched' onClick ={() => this.renderWatched() }>Watched</Button>
+	<Button id='toWatch' onClick ={() => this.renderToWatch() }>To Watch</Button>
   	<Table celled padded>
     <Table.Header>
       <Table.Row>	
