@@ -1,7 +1,9 @@
+import _ from 'lodash'
 import React from 'react';
 import movies from './../../../data/data.js';
 import MovieListEntry from './movieListEntry.jsx';
 import { Icon, Label, Menu, Table, Input, Search, Form, Button} from 'semantic-ui-react';
+import $ from 'jquery';
 
 class App extends React.Component {
 
@@ -12,7 +14,6 @@ class App extends React.Component {
 			curMovies:  movies,	
 			val: ''
 		};
-
 
 		console.log(this.state);
 
@@ -49,7 +50,6 @@ class App extends React.Component {
 		this.setState({
 			curMovies: updatedMovies
 		});
-
 	}
 
 	addMovies() {
@@ -64,26 +64,55 @@ class App extends React.Component {
 	}
 
 
-	handleClick(haveWatched) {
-		console.log(haveWatched);
-	}
+	handleClick({id}, haveWatched) {
+	let movies = this.state.movies;
+	movies.map( (movie) => {
+		if (movie.title === id) {
+			movie.haveWatched = !movie.haveWatched;
+		}
+	});
+	this.setState({
+		curMovies: movies 
+	})
 
-	createList() {
-	var list = [];
-		this.state.curMovies.forEach((movie) => {
-			list.push(<MovieListEntry movie={movie} handleClick ={this.handleClick}/>);
-		});
-		return list;
 	}
 
 	renderWatched() {
+		let movies = this.state.movies;
+		let movieList = [];
 
+		movies.forEach((movie) => {
+			if (movie.haveWatched) {
+				movieList.push(movie);
+			}
+		});
 
+		this.setState({
+			curMovies: movieList
+		})
 	}
 
 	renderToWatch() {
+		let movies = this.state.movies;
+		let movieList = [];
 
+		movies.forEach((movie) => {
+			if (!movie.haveWatched) {
+				movieList.push(movie);
+			}
+		});
 
+		this.setState({
+			curMovies: movieList
+		})
+	}
+
+	createList() {
+	let list = [];
+		this.state.curMovies.forEach((movie, idx) => {
+			list.push(<MovieListEntry key={idx} movie={movie} handleClick ={this.handleClick}/>);
+		});
+		return list;
 	}
 
 	render() {
