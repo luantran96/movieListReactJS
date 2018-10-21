@@ -10,12 +10,11 @@ const MovieListEntry = (props) => {
 		renderedDOM = <Label color='green' id={props.movie.title} onClick ={ (e) => props.handleClick(e.target, props.movie.haveWatched) }>Watched</Label>;	   
 	} else {
 		renderedDOM = <Label id={props.movie.title} onClick ={ (e) => props.handleClick(e.target, props.movie.haveWatched) }>To Watch</Label>;
-
 	}
 
 	return (
 
-      <Table.Row>
+      <Table.Row onClick={ (e) => props.showInfo(e.target, props.movie)}>
         <Table.Cell>{props.movie.title}</Table.Cell>
         <Table.Cell textAlign='right'>  
 			{renderedDOM}

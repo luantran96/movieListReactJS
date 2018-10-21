@@ -2,17 +2,21 @@ import _ from 'lodash'
 import React from 'react';
 import movies from './../../../data/data.js';
 import MovieListEntry from './movieListEntry.jsx';
-import { Icon, Label, Menu, Table, Input, Search, Form, Button} from 'semantic-ui-react';
+import { Icon, Label, Menu, Table, Input, Search, Form, Button,Header, Segment} from 'semantic-ui-react';
 import $ from 'jquery';
+import API_KEY from './../../../config.js';
 
 class App extends React.Component {
 
 	constructor(props) {
 		super(props);
 		this.state = {
-			movies: movies,
-			curMovies:  movies,	
-			val: ''
+			isLoading: false,
+			movies: [],
+			curMovies:  [],	
+			val: '',
+			searchVal:'',
+			searchResults:[]
 		};
 
 		console.log(this.state);
@@ -24,6 +28,10 @@ class App extends React.Component {
 		this.renderWatched = this.renderWatched.bind(this);
 		this.renderToWatch = this.renderToWatch.bind(this);
 		this.handleClick = this.handleClick.bind(this);
+		this.searchMovies= this.searchMovies.bind(this);
+		this.handleSearchChange = this.handleSearchChange.bind(this);
+		this.handleResultSelect = this.handleResultSelect.bind(this);
+		this.showInfo = this.showInfo.bind(this);
 	}
 
 
@@ -56,7 +64,10 @@ class App extends React.Component {
 		let movie = this.state.val;
 		let movies = this.state.movies;
 
-		movies.push({title: movie});
+		movies.push({
+			title: movie,
+			haveWatched: false
+		});
 
 		this.setState({
 			movies: movies
@@ -75,6 +86,39 @@ class App extends React.Component {
 		curMovies: movies 
 	})
 
+	}
+
+	searchMovies(query, cb) {
+
+		$.ajax({
+			method: 'GET',
+			url: `https://api.themoviedb.org/3/search/movie`,
+			data: {
+			api_key: API_KEY,
+			query: query
+			}
+		}).done( (res) => {
+
+			let filteredResults = [];
+			console.log('query:',query);
+			
+
+			for (let i = 0; i < 5; i++) {
+			var {title,release_date, overview, poster_path} = res.results[i];
+
+				filteredResults.push({
+					title,
+					release_date,
+					overview,
+					poster_path,
+					haveWatched: false
+				});
+
+			}
+
+			console.log(filteredResults);
+			cb(filteredResults);
+		});
 	}
 
 	renderWatched() {
@@ -107,12 +151,60 @@ class App extends React.Component {
 		})
 	}
 
+	showInfo(e, movie) {
+
+		console.log(movie);
+
+      return (
+
+      <Table.Row>
+        <Table.Cell>
+        	<div>{movie.title}</div>
+	        <div>{movie.overview}</div>
+        </Table.Cell>      
+      </Table.Row>
+
+      	)
+	}
+
 	createList() {
 	let list = [];
 		this.state.curMovies.forEach((movie, idx) => {
-			list.push(<MovieListEntry key={idx} movie={movie} handleClick ={this.handleClick}/>);
+			list.push(<MovieListEntry key={idx} movie={movie} showInfo = {this.showInfo} handleClick ={this.handleClick}/>);
 		});
 		return list;
+	}
+
+	handleResultSelect(e, { result }) {
+		console.log(result);
+
+		 let movies = this.state.movies;
+
+		movies.push(result);
+		console.log(movies);
+		this.setState({
+			movies: movies,
+			curMovies: movies,
+			searchResults: [],
+			searchVal:''
+		});
+	}
+
+	handleSearchChange(e, {value}) {
+	this.setState({ isLoading: true, searchVal: value });
+     
+     if (value.length < 1) {
+     	this.setState({searchResults: []});
+     } else {
+      this.searchMovies(value, (results) => {
+	      this.setState({
+	        isLoading: false,
+	        searchResults: results
+	      });
+      });
+
+     }
+
 	}
 
 	render() {
@@ -123,8 +215,13 @@ class App extends React.Component {
 
 <div id ='input'>	
 	<div id='addMovies'>
-	<Input id='searchBtn' placeholder='Add Movie...' onChange= { (e) => this.handleChange(e.target) }/>
-	<Button id='addBtn' color='teal' onClick ={() => this.addMovies()}>Add</Button>
+	<Search 
+	loading={this.state.isLoading}
+	onResultSelect = {this.handleResultSelect}
+	onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
+	results = {this.state.searchResults}
+	value = {this.state.searchVal}
+	/>
 	</div>
 
 	<div id='search'>
