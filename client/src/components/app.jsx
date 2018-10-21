@@ -13,13 +13,16 @@ class App extends React.Component {
 			val: ''
 		};
 
+
+		console.log(this.state);
+
 		this.createList = this.createList.bind(this);
 		this.handleChange = this.handleChange.bind(this);
 		this.handleSearch = this.handleSearch.bind(this);
 		this.addMovies = this.addMovies.bind(this);
 		this.renderWatched = this.renderWatched.bind(this);
 		this.renderToWatch = this.renderToWatch.bind(this);
-
+		this.handleClick = this.handleClick.bind(this);
 	}
 
 
@@ -57,13 +60,18 @@ class App extends React.Component {
 
 		this.setState({
 			movies: movies
-		})
+		});
+	}
+
+
+	handleClick(haveWatched) {
+		console.log(haveWatched);
 	}
 
 	createList() {
 	var list = [];
 		this.state.curMovies.forEach((movie) => {
-			list.push(<MovieListEntry movie={movie}/>);
+			list.push(<MovieListEntry movie={movie} handleClick ={this.handleClick}/>);
 		});
 		return list;
 	}
@@ -77,7 +85,6 @@ class App extends React.Component {
 
 
 	}
-
 
 	render() {
 		return (
@@ -100,12 +107,13 @@ class App extends React.Component {
 	<div id='table'>
 	<Button color='green' id='watched' onClick ={() => this.renderWatched() }>Watched</Button>
 	<Button id='toWatch' onClick ={() => this.renderToWatch() }>To Watch</Button>
-  	<Table celled padded>
+  	<Table striped>
     <Table.Header>
       <Table.Row>	
         <Table.HeaderCell>Movie Title</Table.HeaderCell>
+        <Table.HeaderCell></Table.HeaderCell>
       </Table.Row>
-    </Table.Header>
+      </Table.Header>
     <Table.Body>
     	{this.createList()}
     </Table.Body>
