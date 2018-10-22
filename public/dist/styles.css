@@ -5,11 +5,25 @@
 	justify-content: space-around;
 }
 
-
+#movieTitle {
+	font-size: 30px;
+	font-weight: bold;
+	padding-bottom: 30px;
+}
 #watched {
 
 }
 
+.key {
+
+	font-weight: bold;
+}
+
+#description{
+	width: 600px;
+	padding-bottom: 30px;
+
+}
 #table {
 	padding: 0;
 	margin: 20px auto;

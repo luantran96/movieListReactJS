@@ -103,15 +103,16 @@ class App extends React.Component {
 			console.log('query:',query);
 			
 
-			for (let i = 0; i < 5; i++) {
+			for (let i = 0; i < 3; i++) {
 			var {title,release_date, overview, poster_path} = res.results[i];
 
 				filteredResults.push({
 					title,
 					release_date,
-					overview,
+					description: overview,
 					poster_path,
-					haveWatched: false
+					haveWatched: false,
+					showInfo: false
 				});
 
 			}
@@ -153,18 +154,18 @@ class App extends React.Component {
 
 	showInfo(e, movie) {
 
-		console.log(movie);
+		console.log('movie in showInfo:\n',movie);
 
-      return (
+	let movies = this.state.movies;
+	movies.map( (curMovie) => {
+		if (curMovie.title === movie.title) {
+			curMovie.showInfo = !movie.showInfo;
+		}
+	});
 
-      <Table.Row>
-        <Table.Cell>
-        	<div>{movie.title}</div>
-	        <div>{movie.overview}</div>
-        </Table.Cell>      
-      </Table.Row>
-
-      	)
+		this.setState({
+			movies: movies
+		});
 	}
 
 	createList() {
