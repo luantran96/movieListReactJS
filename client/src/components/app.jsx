@@ -32,6 +32,20 @@ class App extends React.Component {
 		this.handleSearchChange = this.handleSearchChange.bind(this);
 		this.handleResultSelect = this.handleResultSelect.bind(this);
 		this.showInfo = this.showInfo.bind(this);
+		this.fetchMovies = this.fetchMovies.bind(this);
+	}
+
+	componentDidMount() {
+
+		this.fetchMovies((movies) => {
+
+				this.setState({
+					movies: movies,
+					curMovies: movies,
+					searchResults: [],
+					searchVal:''
+				});	
+		});
 	}
 
 
@@ -90,6 +104,7 @@ class App extends React.Component {
 
 	searchMovies(query, cb) {
 
+	
 		$.ajax({
 			method: 'GET',
 			url: `https://api.themoviedb.org/3/search/movie`,
@@ -176,26 +191,52 @@ class App extends React.Component {
 		return list;
 	}
 
-	handleResultSelect(e, { result }) {
-		console.log(result);
+	fetchMovies(cb) {
 
-		 let movies = this.state.movies;
-
-		movies.push(result);
-		console.log(movies);
-		this.setState({
-			movies: movies,
-			curMovies: movies,
-			searchResults: [],
-			searchVal:''
+		$.ajax({
+			method:'GET',
+			url:'movies'
+		})
+		.done ((res) => {
+			console.log('res in fetchMovies:\n',res);
+			console.log('OK');
+			cb(res);
 		});
+	}
+
+	handleResultSelect(e, { result }) {
+
+		 $.ajax({
+		 	method:'POST',
+		 	url:'/movies',
+		 	data: JSON.stringify({result}),
+		 	contentType: 'application/json'
+		 }). 
+		 done((res) => {
+		 	console.log('OK');
+
+		 	this.fetchMovies( (res) => {
+		 		console.log(res);
+				this.setState({
+					movies: res,
+					curMovies: res,
+					searchResults: [],
+					searchVal:''
+				});
+		 	});
+
+		 });
+
+
 	}
 
 	handleSearchChange(e, {value}) {
 	this.setState({ isLoading: true, searchVal: value });
      
      if (value.length < 1) {
-     	this.setState({searchResults: []});
+     	this.setState({
+     	isLoading: false,
+     	searchResults: []});
      } else {
       this.searchMovies(value, (results) => {
 	      this.setState({
@@ -217,6 +258,7 @@ class App extends React.Component {
 <div id ='input'>	
 	<div id='addMovies'>
 	<Search 
+	placeholder='Add a movie...'
 	loading={this.state.isLoading}
 	onResultSelect = {this.handleResultSelect}
 	onSearchChange={_.debounce(this.handleSearchChange, 500, { leading: true })}
